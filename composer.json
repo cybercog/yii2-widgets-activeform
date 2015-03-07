@@ -1,0 +1,21 @@
+{
+    "name": "reparsoft/yii2-widgets-activeform",
+    "description": "This extension Extends and enhances the yiisoft/Yii2 Framework of some widget",
+    "type": "yii2-extension",
+    "keywords": ["yii2", "bootstrap", "extension", "widget"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "repar",
+            "email": "47558328@qq.com"
+        }
+    ],
+    "require": {
+        "reparsoft/yii2-toolkit-base": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "repkit\\form\\": ""
+        }
+    }
+}
