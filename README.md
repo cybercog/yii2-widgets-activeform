@@ -107,7 +107,12 @@ Example:
     $form::end();
 
 #### Settings Options
- 
+
+```inline: ``` [boolean] whether to render [[checkboxList()]] and [[radioList()]] inline.
+
+- default: false
+
+
 ```enableLabel: ``` [boolean|empty] Whether enable label.
 
 ```enableError: ``` [boolean|empty] Whether enable error.
@@ -136,6 +141,17 @@ Example:
 
 ```addonOptions: ``` [array|empty] addon options.
 
+```checkboxTemplate``` [string|empty] the template for checkboxes in default layout.
+
+```horizontalCheckboxTemplate: ``` [string|empty] the template for checkboxes in horizontal layout.
+
+```radioTemplate: ``` [string|empty] the template for radios in default layout.
+
+```horizontalRadioTemplate: ``` [string|empty] the template for radio buttons in horizontal layout.
+
+```inlineCheckboxListTemplate: ``` [string|empty] the template for inline checkboxLists.
+
+```inlineRadioListTemplate: ``` [string|empty] the template for inline radioLists.
 
 ## Example
 

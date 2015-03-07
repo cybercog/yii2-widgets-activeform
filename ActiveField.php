@@ -24,6 +24,11 @@ class ActiveField extends \yii\widgets\ActiveField {
      */
 	const SR_ONLY = 'sr-only';
 
+	/**
+     * @var boolean whether to render [[checkboxList()]] and [[radioList()]] inline.
+     */
+    public $inline = false;
+
     /**
      * @var boolean|null  Whether enable label
      */
@@ -77,6 +82,155 @@ class ActiveField extends \yii\widgets\ActiveField {
 	public $addonOptions = [];
 
 
+	/**
+     * @var string the template for checkboxes in default layout
+     */
+    public $checkboxTemplate = "<div class=\"checkbox\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>";
+
+    /**
+     * @var string the template for checkboxes in horizontal layout
+     */
+    public $horizontalCheckboxTemplate = "{beginWrapper}\n<div class=\"checkbox\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n{endWrapper}\n{hint}";
+
+     /**
+     * @var string the template for radios in default layout
+     */
+    public $radioTemplate = "<div class=\"radio\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>";
+    /**
+     * @var string the template for radio buttons in horizontal layout
+     */
+    public $horizontalRadioTemplate = "{beginWrapper}\n<div class=\"radio\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n{endWrapper}\n{hint}";
+
+     /**
+     * @var string the template for inline checkboxLists
+     */
+    public $inlineCheckboxListTemplate = "{label}\n{beginWrapper}\n{input}\n{error}\n{endWrapper}\n{hint}";
+    /**
+     * @var string the template for inline radioLists
+     */
+    public $inlineRadioListTemplate = "{label}\n{beginWrapper}\n{input}\n{error}\n{endWrapper}\n{hint}";
+
+    /**
+     * @inheritdoc
+     */
+    public function checkbox($options = [], $enclosedByLabel = true){
+    	$this->setTemplate($options, $enclosedByLabel, $this->horizontalCheckboxTemplate, $this->checkboxTemplate);
+
+        return parent::checkbox($options, false);
+    }
+
+    public function radio($options = [], $enclosedByLabel = true){
+
+    	$this->setTemplate($options, $enclosedByLabel, $this->horizontalRadioTemplate, $this->radioTemplate);
+
+        return parent::radio($options, false);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkboxList($items, $options = [])
+    {
+        if ($this->inline) {
+            if (!isset($options['template'])) {
+                $this->template = $this->inlineCheckboxListTemplate;
+            } else {
+                $this->template = $options['template'];
+                unset($options['template']);
+            }
+            if (!isset($options['itemOptions'])) {
+                $options['itemOptions'] = [
+                    'labelOptions' => ['class' => 'checkbox-inline'],
+                ];
+            }
+        }  elseif (!isset($options['item'])) {
+            $options['item'] = function ($index, $label, $name, $checked, $value) {
+                return '<div class="checkbox">' . Html::checkbox($name, $checked, ['label' => $label, 'value' => $value]) . '</div>';
+            };
+        }
+        parent::checkboxList($items, $options);
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function radioList($items, $options = [])
+    {
+        if ($this->inline) {
+            if (!isset($options['template'])) {
+                $this->template = $this->inlineRadioListTemplate;
+            } else {
+                $this->template = $options['template'];
+                unset($options['template']);
+            }
+            if (!isset($options['itemOptions'])) {
+                $options['itemOptions'] = [
+                    'labelOptions' => ['class' => 'radio-inline'],
+                ];
+            }
+        }  elseif (!isset($options['item'])) {
+            $options['item'] = function ($index, $label, $name, $checked, $value) {
+                return '<div class="radio">' . Html::radio($name, $checked, ['label' => $label, 'value' => $value]) . '</div>';
+            };
+        }
+        parent::radioList($items, $options);
+        return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function label($label = null, $options = [])
+    {
+
+        if (is_bool($label)) {
+            $this->enableLabel = $label;
+            if ($label === false && $this->form->layout === ActiveForm::LAYOUT_HORIZONTAL) {
+                Html::addCssClass($this->wrapperOptions, $this->form->horizontalLayout['offset']);
+            }
+        } else {
+            $this->enableLabel = true;
+            $this->renderLabelParts($label, $options);
+            parent::label($label, $options);
+        }
+        return $this;
+    }
+
+    /**
+     * @param boolean $value whether to render a inline list
+     * @return static the field object itself
+     * Make sure you call this method before [[checkboxList()]] or [[radioList()]] to have any effect.
+     */
+    public function inline($value = true)
+    {
+        $this->inline = (bool) $value;
+        return $this;
+    }
+    
+    /**
+     * set widget template
+     * @param array options
+     * @param boolean Whether the information in front of the widget
+     * @param string widget of horizontal template configuration
+     * @param string widget of default template configuration
+     */
+    protected function setTemplate($options, $enclosedByLabel, $horizontalTemaplete, $template){
+         if ($enclosedByLabel) {
+            if (!isset($options['template'])) {
+                $this->template = $this->form->layout === ActiveForm::LAYOUT_HORIZONTAL ?
+                    $horizontalTemaplete : $template;
+            } else {
+                $this->template = $options['template'];
+                unset($options['template']);
+            }
+            if ($this->form->layout === ActiveForm::LAYOUT_HORIZONTAL) {
+               Html::addCssClass($this->wrapperOptions, $this->form->horizontalLayout['offset']);
+            }
+            $this->labelOptions['class'] = null;
+        }
+    }
 
      /**
      * @inheritdoc
